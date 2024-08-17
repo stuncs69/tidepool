@@ -42,6 +42,7 @@ export class TideScreen {
             cyan: '\x1b[46m',
             white: '\x1b[47m',
             transparent: '\x1b[49m',
+            random: '\x1b[48;5;' + Math.floor(Math.random() * 256) + 'm',
         };
 
         return colors[color.toLowerCase()] || colors['black'];

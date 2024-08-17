@@ -9,6 +9,7 @@ export function getColorCode(color: string) {
       magenta: '\x1b[35m',
       cyan: '\x1b[36m',
       white: '\x1b[37m',
+      random: '\x1b[38;5;' + Math.floor(Math.random() * 256) + 'm',
     };
     
     return colors[color.toLowerCase()] || colors['reset'];
