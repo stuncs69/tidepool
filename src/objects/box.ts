@@ -65,7 +65,7 @@ export class Box implements TideObject {
         }
       }
   
-      for (let content of this.contents) {
+      for (const content of this.contents) {
         content.draw(screen, this.x + 1, this.y + 1, this.width - 2);
       }
     }
