@@ -1,6 +1,6 @@
 {
   "name": "tidepool",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "stuncs69",
   "main": "dist/index.js",
   "devDependencies": {
