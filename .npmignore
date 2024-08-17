@@ -4,3 +4,4 @@ tsconfig.json
 yarn.lock
 node_modules
 bun.lockb
+a.ts

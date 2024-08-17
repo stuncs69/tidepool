@@ -9,3 +9,4 @@ dist/
 *.d.ts
 .DS_Store
 bun.lockb
+a.ts

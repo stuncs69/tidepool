@@ -3,6 +3,10 @@
   "version": "1.0.5",
   "author": "stuncs69",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/tidepool.git"
+  },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
     "@types/node": "^22.2.0",
