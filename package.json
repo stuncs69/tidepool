@@ -1,15 +1,15 @@
 {
   "name": "tidepool",
   "version": "1.0.0",
-  "description": "A CLI rendering engine in TypeScript.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "stuncs69",
-  "license": "ISC",
+  "main": "dist/index.js",
   "devDependencies": {
     "@types/node": "^22.2.0",
     "typescript": "^5.5.4"
+  },
+  "description": "A CLI rendering engine in TypeScript.",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
