@@ -5,3 +5,4 @@ yarn.lock
 node_modules
 bun.lockb
 a.ts
+src/test.ts

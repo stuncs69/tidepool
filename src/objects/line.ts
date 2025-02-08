@@ -13,7 +13,7 @@ export class Line implements TideObject {
         this.relativeY = y;
         this.length = length;
         this.color = color;
-        this.zIndex = zIndex;
+        this.zIndex = zIndex * 10;
     }
     
     draw(screen: string[][], boxX: number, boxY: number) {

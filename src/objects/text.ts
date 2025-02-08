@@ -1,4 +1,4 @@
-import { TideObject } from "../interfaces";
+import { TideObject, TideEffect } from "../interfaces";
 import { getColorCode, wrapText } from "../util";
 
 export class Text implements TideObject {
@@ -7,18 +7,27 @@ export class Text implements TideObject {
     text: string;
     color: string;
     zIndex: number;
+    effects: TideEffect[] = []
     
     constructor(x: number, y: number, text: string, color = 'reset', zIndex = 0) {
       this.relativeX = x;
       this.relativeY = y;
       this.text = text;
       this.color = color;
-      this.zIndex = zIndex;
+      this.zIndex = zIndex * 10;
+    }
+
+    applyEffect(effect: TideEffect) {
+      this.effects.push(effect)
     }
   
     draw(screen: string[][], boxX: number, boxY: number, boxWidth: number) {
       const colorCode = getColorCode(this.color);
       const lines = wrapText(this.text, boxWidth);
+
+      for (const effect of this.effects) {
+        effect.apply(this, screen)
+      }
       
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];

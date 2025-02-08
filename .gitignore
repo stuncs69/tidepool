@@ -10,3 +10,4 @@ dist/
 .DS_Store
 bun.lockb
 a.ts
+src/test.ts

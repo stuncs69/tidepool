@@ -1,4 +1,8 @@
 export interface TideObject {
     zIndex: number;
-    draw: Function;
+    draw: Function;   
+}
+
+export interface TideEffect {
+    apply: Function;
 }
