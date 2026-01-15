@@ -11,7 +11,7 @@ export class Shadow implements TideEffect {
   }
 
   apply(obj: TideObject, ctx: RenderContext) {
-    if ("x" in obj && "y" in obj && "width" in obj && "height" in obj) {
+    if (this.isBoxLike(obj)) {
       const colorCode = getColorCode(this.color)
       const originX = ctx.origin.x + obj.x
       const originY = ctx.origin.y + obj.y
@@ -39,5 +39,16 @@ export class Shadow implements TideEffect {
         }
       }
     }
+  }
+
+  private isBoxLike(
+    obj: TideObject
+  ): obj is TideObject & { x: number; y: number; width: number; height: number } {
+    return (
+      typeof (obj as { x?: unknown }).x === "number" &&
+      typeof (obj as { y?: unknown }).y === "number" &&
+      typeof (obj as { width?: unknown }).width === "number" &&
+      typeof (obj as { height?: unknown }).height === "number"
+    )
   }
 }
