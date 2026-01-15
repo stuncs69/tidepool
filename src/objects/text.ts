@@ -1,5 +1,5 @@
-import { TideObject, TideEffect } from "../interfaces";
-import { getColorCode, wrapText } from "../util";
+import type { RenderContext, TideEffect, TideObject } from "../interfaces";
+import { getColorCode, setCell, wrapText } from "../util";
 
 export class Text implements TideObject {
   relativeX: number;
@@ -21,22 +21,29 @@ export class Text implements TideObject {
     this.effects.push(effect);
   }
 
-  draw(screen: string[][], boxX: number, boxY: number, boxWidth: number) {
+  draw(ctx: RenderContext) {
+    const screen = ctx.buffer;
     const colorCode = getColorCode(this.color);
-    const lines = wrapText(this.text, boxWidth);
+    const maxWidth = Math.max(0, ctx.clip.width);
+    const lines = wrapText(this.text, maxWidth);
 
     for (const effect of this.effects) {
-      effect.apply(this, screen);
+      effect.apply(this, ctx);
     }
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       for (let j = 0; j < line.length; j++) {
-        const screenX = boxX + this.relativeX + j;
-        const screenY = boxY + this.relativeY + i;
-        if (screenX < screen[0].length && screenY < screen.length) {
-          screen[screenY][screenX] = `${colorCode}${line[j]}\x1b[0m`;
-        }
+        const screenX = ctx.origin.x + this.relativeX + j;
+        const screenY = ctx.origin.y + this.relativeY + i;
+        setCell(
+          screen,
+          screenX,
+          screenY,
+          `${colorCode}${line[j]}\x1b[0m`,
+          ctx.clip,
+          ctx.dirtyRows
+        );
       }
     }
   }

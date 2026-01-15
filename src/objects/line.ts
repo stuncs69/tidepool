@@ -1,5 +1,5 @@
-import { TideObject } from "../interfaces";
-import { getColorCode } from "../util";
+import type { RenderContext, TideObject } from "../interfaces";
+import { getColorCode, setCell } from "../util";
 
 export class Line implements TideObject {
     relativeX: number;
@@ -16,14 +16,19 @@ export class Line implements TideObject {
         this.zIndex = zIndex * 10;
     }
     
-    draw(screen: string[][], boxX: number, boxY: number) {
+    draw(ctx: RenderContext) {
         const colorCode = getColorCode(this.color);
         for (let i = 0; i < this.length; i++) {
-        const screenX = boxX + this.relativeX + i;
-        const screenY = boxY + this.relativeY;
-        if (screenX < screen[0].length && screenY < screen.length) {
-            screen[screenY][screenX] = `${colorCode}─\x1b[0m`;
-        }
+        const screenX = ctx.origin.x + this.relativeX + i;
+        const screenY = ctx.origin.y + this.relativeY;
+        setCell(
+          ctx.buffer,
+          screenX,
+          screenY,
+          `${colorCode}─\x1b[0m`,
+          ctx.clip,
+          ctx.dirtyRows
+        );
         }
     }
 }

@@ -1,7 +1,13 @@
-import type { TideObject, TideEffect } from "../interfaces";
-import { getColorCode } from "../util";
+import type { Focusable, KeyInfo, RenderContext, TideEffect, TideObject } from "../interfaces";
+import { getColorCode, setCell } from "../util";
 
-export class Button implements TideObject {
+export interface ButtonOptions {
+  onPress?: () => void;
+  focusedBackgroundColor?: string;
+  focusedTextColor?: string;
+}
+
+export class Button implements TideObject, Focusable {
   x: number;
   y: number;
   width: number;
@@ -11,6 +17,10 @@ export class Button implements TideObject {
   backgroundColor: string;
   zIndex: number;
   effects: TideEffect[] = [];
+  isFocused = false;
+  onPress?: () => void;
+  focusedBackgroundColor: string;
+  focusedTextColor: string;
 
   constructor(
     zIndex: number,
@@ -20,7 +30,8 @@ export class Button implements TideObject {
     height: number,
     text: string,
     textColor = "white",
-    backgroundColor = "blue"
+    backgroundColor = "blue",
+    options: ButtonOptions = {}
   ) {
     this.zIndex = zIndex * 10;
     this.x = x;
@@ -30,17 +41,70 @@ export class Button implements TideObject {
     this.text = text;
     this.textColor = textColor;
     this.backgroundColor = backgroundColor;
+    this.onPress = options.onPress;
+    this.focusedBackgroundColor = options.focusedBackgroundColor ?? "white";
+    this.focusedTextColor = options.focusedTextColor ?? "black";
   }
 
-  draw(screen: string[][]) {
-    const textColorCode = getColorCode(this.textColor);
-    const bgColorCode = getColorCode(this.backgroundColor);
+  focus() {
+    this.isFocused = true;
+  }
+
+  blur() {
+    this.isFocused = false;
+  }
+
+  contains(x: number, y: number) {
+    return (
+      x >= this.x &&
+      y >= this.y &&
+      x < this.x + this.width &&
+      y < this.y + this.height
+    );
+  }
+
+  handleClick(_x: number, _y: number) {
+    if (this.onPress) {
+      this.onPress();
+    }
+    return true;
+  }
+
+  handleKey(_input: string, key: KeyInfo) {
+    if (key.name === "return" || key.name === "enter" || key.name === "space") {
+      if (this.onPress) {
+        this.onPress();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  draw(ctx: RenderContext) {
+    const screen = ctx.buffer;
+    const originX = ctx.origin.x + this.x;
+    const originY = ctx.origin.y + this.y;
+    const activeTextColor = this.isFocused
+      ? this.focusedTextColor
+      : this.textColor;
+    const activeBackground = this.isFocused
+      ? this.focusedBackgroundColor
+      : this.backgroundColor;
+    const textColorCode = getColorCode(activeTextColor);
+    const bgColorCode = getColorCode(activeBackground);
     const resetCode = "\x1b[0m";
 
     // Fill the button area with background-colored spaces
-    for (let i = this.y; i < this.y + this.height; i++) {
-      for (let j = this.x; j < this.x + this.width; j++) {
-        screen[i][j] = `${bgColorCode} ${resetCode}`;
+    for (let i = originY; i < originY + this.height; i++) {
+      for (let j = originX; j < originX + this.width; j++) {
+        setCell(
+          screen,
+          j,
+          i,
+          `${bgColorCode} ${resetCode}`,
+          ctx.clip,
+          ctx.dirtyRows
+        );
       }
     }
 
@@ -49,8 +113,8 @@ export class Button implements TideObject {
 
     // Calculate the starting x position for centered text.
     // Make sure we center the padded text, not the original text.
-    const textStart = this.x + Math.floor((this.width - paddedText.length) / 2);
-    const textRow = this.y + Math.floor(this.height / 2);
+    const textStart = originX + Math.floor((this.width - paddedText.length) / 2);
+    const textRow = originY + Math.floor(this.height / 2);
 
     // Draw the padded text onto the screen.
     for (
@@ -58,9 +122,14 @@ export class Button implements TideObject {
       i < paddedText.length && textStart + i < this.x + this.width;
       i++
     ) {
-      screen[textRow][
-        textStart + i
-      ] = `${bgColorCode}${textColorCode}${paddedText[i]}${resetCode}`;
+      setCell(
+        screen,
+        textStart + i,
+        textRow,
+        `${bgColorCode}${textColorCode}${paddedText[i]}${resetCode}`,
+        ctx.clip,
+        ctx.dirtyRows
+      );
     }
   }
 }

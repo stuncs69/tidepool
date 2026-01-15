@@ -1,5 +1,5 @@
-import type { TideEffect, TideObject } from "../interfaces"
-import { getColorCode } from "../util"
+import type { RenderContext, TideEffect, TideObject } from "../interfaces"
+import { getColorCode, setCell } from "../util"
 
 export class Shadow implements TideEffect {
   private offset: { x: number; y: number }
@@ -10,22 +10,34 @@ export class Shadow implements TideEffect {
     this.color = color
   }
 
-  apply(obj: TideObject, screen: string[][]) {
+  apply(obj: TideObject, ctx: RenderContext) {
     if ("x" in obj && "y" in obj && "width" in obj && "height" in obj) {
       const colorCode = getColorCode(this.color)
-      const maxY = Math.min(obj.y + obj.height + this.offset.y, screen.length)
-      const maxX = Math.min(obj.x + obj.width + this.offset.x, screen[0].length)
+      const originX = ctx.origin.x + obj.x
+      const originY = ctx.origin.y + obj.y
+      const maxY = Math.min(
+        originY + obj.height + this.offset.y,
+        ctx.buffer.length
+      )
+      const maxX = Math.min(
+        originX + obj.width + this.offset.x,
+        ctx.buffer[0].length
+      )
 
-      for (let i = obj.y + this.offset.y; i < maxY; i++) {
-        for (let j = obj.x + this.offset.x; j < maxX; j++) {
-          if (i >= 0 && j >= 0 && i < screen.length && j < screen[0].length) {
-            if (screen[i][j] === " ") {
-              screen[i][j] = `${colorCode}█\x1b[0m`
-            }
+      for (let i = originY + this.offset.y; i < maxY; i++) {
+        for (let j = originX + this.offset.x; j < maxX; j++) {
+          if (ctx.buffer[i][j] === " ") {
+            setCell(
+              ctx.buffer,
+              j,
+              i,
+              `${colorCode}█\x1b[0m`,
+              ctx.clip,
+              ctx.dirtyRows
+            )
           }
         }
       }
     }
   }
 }
-

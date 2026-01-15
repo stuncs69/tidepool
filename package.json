@@ -3,9 +3,10 @@
   "version": "1.0.6",
   "author": "stuncs69",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/tidepool.git"
+    "url": "https://github.com/stuncs69/tidepool.git"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -20,7 +21,23 @@
   "description": "A CLI rendering engine in TypeScript.",
   "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./src/*"
+    "test": "npm run build && node --test test/*.test.js",
+    "lint": "eslint ./src/*",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "demo:build": "tsc -p demo/tsconfig.json",
+    "demo": "npm run build && npm run demo:build && node dist-demo/demo/demo.js",
+    "demo:stack": "npm run build && npm run demo:build && node dist-demo/demo/stacking.js",
+    "demo:form": "npm run build && npm run demo:build && node dist-demo/demo/form.js",
+    "demo:chat": "npm run build && npm run demo:build && node dist-demo/demo/chat.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   }
 }
